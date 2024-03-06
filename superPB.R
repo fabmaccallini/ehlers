@@ -1,7 +1,7 @@
 # Super Passband Filter - John F. Ehlers - Technical Analysis of Stocks and Commodities, Jul 2016
 # ref: http://technical.traders.com/content/TTlink.asp?mo=07&yr=2016
 
-superPB <- function(x, period1 = 10, period2 = 48, plot = TRUE) {
+superPB <- function (x, period1 = 10, period2 = 48, plot = TRUE) {
     a1 <- 5 / period1
     a2 <- 5 / period2
     pb <- (a1 - a2) * x + (a2 * (1 - a1) - a1 * (1 - a2)) * lag(x)
