@@ -1,13 +1,14 @@
 ### Cycle Analytics for Traders: Advanced Technical Trading Concepts (2013, Wiley Trading)
 
-require(quantmod)
+library (dyplr)
+library (quantmod)
 getSymbols.extra("SPY", from = '2015-01-01', to = '2016-10-01')
 x <- Cl(SPY)
 
 ## Chapter 3
 
 # 2-pole modified Butterworth
-bwMod2 <- function(x, period = 10) {
+bwMod2 <- function (x, period = 10) {
     a1 <- exp(-sqrt(2) * pi / period)
     b1 <- 2 * a1 * cos(sqrt(2) * 1.25 * pi / period)
     c2 <- b1
@@ -20,7 +21,7 @@ bwMod2 <- function(x, period = 10) {
 }
 
 # 3-pole modified Butterworth
-bwMod3 <- function(x, period = 10) {
+bwMod3 <- function (x, period = 10) {
     a1 <- exp(-pi / period)
     b1 <- 2 * a1 * cos(1.738 * pi / period)
     c1 <- a1 * a1
@@ -35,7 +36,7 @@ bwMod3 <- function(x, period = 10) {
 }
 
 # Supersmoother
-superSmoother <- function(x, period = 10) {
+superSmoother <- function (x, period = 10) {
     a1 <- exp(-sqrt(2) * pi / period)
     b1 <- 2 * a1 * cos(sqrt(2) * pi / period)
     c2 <- b1
@@ -54,7 +55,7 @@ superSmoother <- function(x, period = 10) {
 ## Chapter 4
 
 # Decycler (code 4.1)
-decycler <- function(x, cutoff = 60) {
+decycler <- function (x, cutoff = 60) {
     alpha1 <- (cos(2 * pi / cutoff) + sin(2 * pi / cutoff) - 1) / cos(2 * pi / cutoff)
     decycl <- alpha1 * (x + lag(x)) / 2
     leadNAs <- sum(is.na(decycl))
@@ -66,7 +67,7 @@ decycler <- function(x, cutoff = 60) {
 }
 
 # Decycler Oscillator (code 4.2)
-decyclerOscillator <- function(x, cutoff1 = 30, cutoff2 = 60) {
+decyclerOscillator <- function (x, cutoff1 = 30, cutoff2 = 60) {
     alpha1 <- (cos(sqrt(2) * pi / cutoff1) + sin(sqrt(2) * pi / cutoff1) - 1) / cos(sqrt(2) * pi / cutoff1)
     alpha2 <- (cos(sqrt(2) * pi / cutoff2) + sin(sqrt(2) * pi / cutoff2) - 1) / cos(sqrt(2) * pi / cutoff2)
     hp1 <- (1 - alpha1 / 2) ^ 2 * (x - 2 * lag(x, 1) + lag(x, 2))
@@ -88,7 +89,7 @@ decyclerOscillator <- function(x, cutoff1 = 30, cutoff2 = 60) {
 ## Chapter 5
 
 # Automatic Gain Control (fast attack - slow decay AGC)
-AGC <- function(loCutoff = 10, hiCutoff = 48, slope = 1.5) {   
+AGC <- function (loCutoff = 10, hiCutoff = 48, slope = 1.5) {   
     accSlope = -slope # acceptableSlope = 1.5 dB
     ratio = 10 ^ (accSlope / 20)
     if ((hiCutoff - loCutoff) > 0)
@@ -97,7 +98,7 @@ AGC <- function(loCutoff = 10, hiCutoff = 48, slope = 1.5) {
 }
 
 # Band-Pass Filter (code 5.1)
-bandPassFilter <- function(x, period = 20, bandwidth = 0.3) {
+bandPassFilter <- function (x, period = 20, bandwidth = 0.3) {
     alpha2 <- (cos(0.25 * bandwidth * 2 * pi / period) + sin(0.25 * bandwidth * 2 * pi / period) - 1) / cos(0.25 * bandwidth * 2 * pi / period)
     hp <- (1 + alpha2 / 2) * (x - lag(x))
     hp <- hp[-1]
@@ -128,7 +129,7 @@ bandPassFilter <- function(x, period = 20, bandwidth = 0.3) {
 }
 
 # Dominant Cycle (code 5.2)
-bandPassFilter <- function(x, period = 20, bandwidth = 0.3) {
+bandPassFilter <- function (x, period = 20, bandwidth = 0.3) {
     alpha2 <- (cos(0.25 * bandwidth * 2 * pi / period) + sin(0.25 * bandwidth * 2 * pi / period) - 1) / cos(0.25 * bandwidth * 2 * pi / period)
     hp <- (1 + alpha2 / 2) * (x - lag(x))
     hp <- hp[-1]
@@ -162,7 +163,7 @@ bandPassFilter <- function(x, period = 20, bandwidth = 0.3) {
 ## Chapter 6
 
 # Hurst Coefficient (code 6.1)
-hursCoefficient <- function(x, period = 20) {
+hursCoefficient <- function (x, period = 20) {
     if (period %% 2 == 1) period <- period - 1 # period must be an even number
     a1 <- exp(-sqrt(2) * pi / period)
     b1 <- 2 * a1 * cos(sqrt(2) * pi / period)
@@ -187,7 +188,7 @@ hursCoefficient <- function(x, period = 20) {
 ## Chapter 7
 
 # Roofing Filter (code 7.1)
-roofingFilter <- function(x, period1 = 10, period2 = 48) {
+roofingFilter <- function (x, period1 = 10, period2 = 48) {
     # high pass filter
     alpha1 <- (cos(2 * pi / period2) + sin(2 * pi / period2) - 1) / cos(2 * pi / period2)
     hp <- (1 - alpha1 / 2) * (x - lag(x))
@@ -210,7 +211,7 @@ roofingFilter <- function(x, period1 = 10, period2 = 48) {
 }
 
 # Zero Mean Roofing Filter (code 7.2)
-ZMroofingFilter <- function(x, period1 = 10, period2 = 48) {
+ZMroofingFilter <- function (x, period1 = 10, period2 = 48) {
     # high pass filter
     alpha1 <- (cos(2 * pi / period2) + sin(2 * pi / period2) - 1) / cos(2 * pi / period2)
     hp <- (1 - alpha1 / 2) * (x - lag(x))
@@ -239,7 +240,7 @@ ZMroofingFilter <- function(x, period1 = 10, period2 = 48) {
 }
 
 # Roofing Filter Indicator (code 7.3)
-ZMroofingFilter <- function(x, period1 = 40, period2 = 80) {
+ZMroofingFilter <- function (x, period1 = 40, period2 = 80) {
     # high pass filter
     alpha1 <- (cos(sqrt(2) * pi / period2) + sin(sqrt(2) * pi / period2) - 1) / cos(sqrt(2) * pi / period2)
     hp <- (1 - alpha1 / 2) ^ 2 * (x - 2 * lag(x) + lag(x, 2))
@@ -268,7 +269,7 @@ ZMroofingFilter <- function(x, period1 = 40, period2 = 80) {
 }
 
 # Modified Stochastic (code 7.4)
-modifiedStochastic <- function(x, window = 20, period1 = 10, period2 = 48) {
+modifiedStochastic <- function (x, window = 20, period1 = 10, period2 = 48) {
     # high pass filter
     alpha1 <- (cos(sqrt(2) * pi / period2) + sin(sqrt(2) * pi / period2) - 1) / cos(sqrt(2) * pi / period2)
     hp <- (1 - alpha1 / 2) ^ 2 * (x - 2 * lag(x) + lag(x, 2))
@@ -298,7 +299,7 @@ modifiedStochastic <- function(x, window = 20, period1 = 10, period2 = 48) {
 }
 
 # Modified RSI (code 7.5)
-modifiedRSI <- function(x, window = 20, period1 = 10, period2 = 48) {
+modifiedRSI <- function (x, window = 20, period1 = 10, period2 = 48) {
     # high pass filter
     alpha1 <- (cos(sqrt(2) * pi / period2) + sin(sqrt(2) * pi / period2) - 1) / cos(sqrt(2) * pi / period2)
     hp <- (1 - alpha1 / 2) ^ 2 * (x - 2 * lag(x) + lag(x, 2))
@@ -336,7 +337,7 @@ modifiedRSI <- function(x, window = 20, period1 = 10, period2 = 48) {
 ## Chapter 8
 
 # Autocorrelation Indicator (code 8.2)
-autocorrIndicator <- function(x, period1 = 10, period2 = 48, avgLength = 3) {
+autocorrIndicator <- function (x, period1 = 10, period2 = 48, avgLength = 3) {
     # high pass filter
     alpha1 <- (cos(sqrt(2) * pi / period2) + sin(sqrt(2) * pi / period2) - 1) / cos(sqrt(2) * pi / period2)
     hp <- (1 - alpha1 / 2) ^ 2 * (x - 2 * lag(x) + lag(x, 2))
@@ -370,7 +371,7 @@ autocorrIndicator <- function(x, period1 = 10, period2 = 48, avgLength = 3) {
 }
 
 # Autocorrelation Periodogram (code 8.3)
-autocorrPeriodogram <- function(x, period1 = 10, period2 = 48, avgLength = 3) {
+autocorrPeriodogram <- function (x, period1 = 10, period2 = 48, avgLength = 3) {
     # high pass filter
     alpha1 <- (cos(sqrt(2) * pi / period2) + sin(sqrt(2) * pi / period2) - 1) / cos(sqrt(2) * pi / period2)
     hp <- (1 - alpha1 / 2) ^ 2 * (x - 2 * lag(x) + lag(x, 2))
@@ -436,7 +437,7 @@ autocorrPeriodogram <- function(x, period1 = 10, period2 = 48, avgLength = 3) {
 }
 
 # Autocorrelation Reversals (code 8.4)
-autocorrReversals <- function(x, period1 = 10, period2 = 48, avgLength = 3) {
+autocorrReversals <- function (x, period1 = 10, period2 = 48, avgLength = 3) {
     # high pass filter
     alpha1 <- (cos(sqrt(2) * pi / period2) + sin(sqrt(2) * pi / period2) - 1) / cos(sqrt(2) * pi / period2)
     hp <- (1 - alpha1 / 2) ^ 2 * (x - 2 * lag(x) + lag(x, 2))
@@ -475,4 +476,3 @@ autocorrReversals <- function(x, period1 = 10, period2 = 48, avgLength = 3) {
     }
     reversals <- xts(sumDeltas > 24, order.by = index(x))
 }
-
